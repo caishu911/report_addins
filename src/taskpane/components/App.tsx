@@ -80,8 +80,8 @@ export default class App extends React.Component<AppProps, AppState> {
 
     return (
       <div className="ms-welcome">
-        <RequesyQuery items={this.state.listItems} logo="assets/report-icon-16.png" title={this.props.title} message="输入需求/联系单号" />
-        <VerifyCode logo="assets/report-icon-16.png" title={this.props.title} message="输入查询码" />
+        <RequesyQuery items={this.state.listItems} logo="assets/icon-request-16.png" title={this.props.title} message="输入需求/联系单号" />
+        <VerifyCode logo="assets/icon-sms-16.png" title={this.props.title} message="输入查询码" />
         <ReportBox logo="assets/report-icon-16.png" title={this.props.title} message="报表清单" />
       </div>
     );

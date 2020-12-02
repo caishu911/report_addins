@@ -26,29 +26,46 @@ const buttonStyle: Partial<IButtonStyles> = {root: {width: "100%"}};
 const columnTags = ["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"];
 
 
+const randomString = (e:number) => {
+  var t = "ABCDEFGHJKMNPQRSTWXYZabcdefhijkmnprstwxyz2345678",
+  a = t.length,
+  _string = "";
+  for (let i = 0; i < e; i++) _string += t.charAt(Math.floor(Math.random() * a));
+  return _string
+}
+
+
 export default class RequesyBox extends React.Component<RequesyBoxProps> {
 
   render() {
     const { title, logo, message, items } = this.props;
-
     const onSearch = () => {
       $reportAPI.test({}, async (res: any)=>{
         await Excel.run(async context => {
           let headerRow = Object.keys(res.data[0]);
           let columnTagsRange = columnTags[1] + '1' + ":" + columnTags[headerRow.length] + "1";
-          context.workbook.worksheets.getItem("Sheet1").getRange().delete("Left");
-          let reportTable = context.workbook.worksheets.getItem("Sheet1").tables.add(columnTagsRange, true);
-          reportTable.name = "test";
+          console.log(context.workbook.worksheets);
+          try {
+            context.workbook.worksheets.getItem("Sample").delete();
+          } catch (error) {
+            
+          }
+          let sheet1 = context.workbook.worksheets.add("Sample");
+          let reportTable = sheet1.tables.add(columnTagsRange, true);
+          let _tableNmame = randomString(16);
+          console.log(_tableNmame);
+          reportTable.name = _tableNmame;
           reportTable.getHeaderRowRange().values = [headerRow];
           let dataBody = [];
           res.data.forEach(row => {
             dataBody.push(Object.values(row));
           });
-          // console.log(dataBody)
           reportTable.rows.add(null, dataBody);
           reportTable.getRange().format.autofitColumns();
           reportTable.getRange().format.autofitRows();
+          context.workbook.worksheets.getItem("Sample").activate();
         })
+        
       }, (err:any)=>{
         console.log(err);
       });
