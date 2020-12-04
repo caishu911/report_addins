@@ -35,41 +35,69 @@ const randomString = (e:number) => {
 }
 
 
+
 export default class RequesyBox extends React.Component<RequesyBoxProps> {
 
   render() {
     const { title, logo, message, items } = this.props;
+
     const onSearch = () => {
       $reportAPI.test({}, async (res: any)=>{
-        await Excel.run(async context => {
-          let headerRow = Object.keys(res.data[0]);
-          let columnTagsRange = columnTags[1] + '1' + ":" + columnTags[headerRow.length] + "1";
-          console.log(context.workbook.worksheets);
-          try {
-            context.workbook.worksheets.getItem("Sample").delete();
-          } catch (error) {
-            
-          }
-          let sheet1 = context.workbook.worksheets.add("Sample");
-          let reportTable = sheet1.tables.add(columnTagsRange, true);
-          let _tableNmame = randomString(16);
-          console.log(_tableNmame);
-          reportTable.name = _tableNmame;
-          reportTable.getHeaderRowRange().values = [headerRow];
-          let dataBody = [];
-          res.data.forEach(row => {
-            dataBody.push(Object.values(row));
-          });
-          reportTable.rows.add(null, dataBody);
-          reportTable.getRange().format.autofitColumns();
-          reportTable.getRange().format.autofitRows();
-          context.workbook.worksheets.getItem("Sample").activate();
-        })
-        
-      }, (err:any)=>{
+        Excel.run(context => {
+          let sh = context.workbook.worksheets.getItemOrNullObject("浙电功能湖【2020】114号");
+          return context.sync().then(
+            ()=>{
+              sh.isNullObject? null: sh.delete();
+              let newSheet = context.workbook.worksheets.add("浙电功能湖【2020】114号");
+              let headerRow = Object.keys(res.data[0]);
+              let columnTagsRange = columnTags[1] + '1' + ":" + columnTags[headerRow.length] + "1";
+              console.log(columnTagsRange);
+              let reportTable = newSheet.tables.add(columnTagsRange, true);
+              let _tableNmame = randomString(16);
+              reportTable.name = _tableNmame;
+              reportTable.getHeaderRowRange().values = [headerRow];
+              let dataBody = [];
+              res.data.forEach(row => {
+                dataBody.push(Object.values(row));
+              });
+              reportTable.rows.add(null, dataBody);
+              reportTable.getRange().format.autofitColumns();
+              reportTable.getRange().format.autofitRows();
+              newSheet.activate();
+              return context.sync();
+            }
+          );
+        });
+      }, (err)=>{
         console.log(err);
-      });
+      })
     }
+
+    // const onSearch = () => {
+    //   $reportAPI.test({}, async (res: any)=>{
+    //     await Excel.run(async context => {
+    //       context.workbook.worksheets.getItemOrNullObject("aaaaa");
+    //       let headerRow = Object.keys(res.data[0]);
+    //       let columnTagsRange = columnTags[1] + '1' + ":" + columnTags[headerRow.length] + "1";
+    //       let sheet1 = context.workbook.worksheets.add("Sample");
+    //       let reportTable = sheet1.tables.add(columnTagsRange, true);
+    //       let _tableNmame = randomString(16);
+    //       reportTable.name = _tableNmame;
+    //       reportTable.getHeaderRowRange().values = [headerRow];
+    //       let dataBody = [];
+    //       res.data.forEach(row => {
+    //         dataBody.push(Object.values(row));
+    //       });
+    //       reportTable.rows.add(null, dataBody);
+    //       reportTable.getRange().format.autofitColumns();
+    //       reportTable.getRange().format.autofitRows();
+    //       context.workbook.worksheets.getItem("Sample").activate();
+    //       return context.sync();
+    //     });
+    //   }, (err:any)=>{
+    //     console.log(err);
+    //   });
+    // }
 
     const listItems = items.map((item, index) => (
       <li className="ms-ListItem" key={index}>
