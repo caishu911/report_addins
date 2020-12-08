@@ -49,6 +49,10 @@ export default class RequesyBox extends React.Component<RequesyBoxProps> {
             ()=>{
               sh.isNullObject? null: sh.delete();
               let newSheet = context.workbook.worksheets.add("浙电功能湖【2020】114号");
+              // newSheet.protection.protect({
+              //   allowEditObjects: false,
+              //   allowEditScenarios: false
+              // });
               let headerRow = Object.keys(res.data[0]);
               let columnTagsRange = columnTags[1] + '1' + ":" + columnTags[headerRow.length] + "1";
               console.log(columnTagsRange);
@@ -64,6 +68,10 @@ export default class RequesyBox extends React.Component<RequesyBoxProps> {
               reportTable.getRange().format.autofitColumns();
               reportTable.getRange().format.autofitRows();
               newSheet.activate();
+              // newSheet.protection.protect({
+              //   allowEditObjects: true,
+              //   allowEditScenarios: true
+              // });
               return context.sync();
             }
           );
